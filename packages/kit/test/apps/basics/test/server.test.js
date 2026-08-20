@@ -911,6 +911,15 @@ test.describe('$app/environment', () => {
 	});
 });
 
+test.describe('web workers', () => {
+	test('worker files emitted by the server build are copied to the client output', () => {
+		test.skip(!!process.env.DEV, 'skip when in dev mode');
+
+		const workers = path.join(root, '.svelte-kit/output/client/_app/immutable/workers');
+		expect(fs.readdirSync(workers).some((file) => file.startsWith('worker-'))).toBe(true);
+	});
+});
+
 test.describe('tracing', () => {
 	// Helper function to find the resolve.root span deep in the handle.child chain
 	/**

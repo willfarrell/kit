@@ -1291,6 +1291,7 @@ async function kit({ svelte_config }) {
 
 				const server_chunks = Object.values(server_bundle);
 				const assets_path = `${kit.appDir}/immutable/assets`;
+				const workers_path = `${kit.appDir}/immutable/workers`;
 
 				// first, build server nodes without the client manifest so we can analyse it
 				build_server_nodes(
@@ -1401,6 +1402,10 @@ async function kit({ svelte_config }) {
 							copy(src, dest);
 						}
 					}
+
+					// worker files emitted by the server build (e.g. `?worker&url` imports
+					// in server-only modules) must be served to the client, too
+					copy(`${out}/server/${workers_path}`, `${out}/client/${workers_path}`);
 
 					/** @type {Manifest} */
 					const manifest = (client_manifest = JSON.parse(
@@ -1532,6 +1537,7 @@ async function kit({ svelte_config }) {
 					);
 				} else {
 					copy(server_assets, client_assets);
+					copy(`${out}/server/${workers_path}`, `${out}/client/${workers_path}`);
 					copy(kit.files.assets, `${out}/client`);
 				}
 
